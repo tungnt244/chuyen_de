@@ -15,17 +15,13 @@ export default class Typer extends Component{
             middstring: middstr,//an element 
             rightstring:rightstr,//full array without midd
             timeRemaining: timer, //timer left
-            isStart:false
         }
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.startType = this.startType.bind(this);
     }
     
     startType(){
-        this.setState({
-            isStart: true
-        })
-        this.timerId = setInterval(() => this.tick(), 1000);
+        this.props.startGame()
     }
 
     currentProgress(){
@@ -55,9 +51,8 @@ export default class Typer extends Component{
                     rightstring:rightstr,//full array without midd
                 })
                 if(!midd){
-                    this.setState({
-                        isStart: false
-                    })
+                    console.log('in midd')
+                    this.props.stopGame()
                 }
             }
         }
@@ -66,9 +61,9 @@ export default class Typer extends Component{
     tick(){
         if(this.state.timeRemaining === 0){
             clearInterval(this.timerId)
-            this.setState({
-                isStart: false
-            })
+            if(this.props.isStart){
+                this.props.stopGame()
+            }
             return;
         }
 
@@ -79,12 +74,20 @@ export default class Typer extends Component{
         })
     }
 
+    componentWillReceiveProps(nextProps){
+        if(nextProps.isStart === true && !this.timerId){
+            this.timerId = setInterval(() => this.tick(), 1000);
+        }
+    }
+
     render(){
         let rightStrArr = this.state.rightstring;
         let middStr = this.state.middstring;
         let leftStrArr = this.state.leftstring;
         let currentProgress = this.currentProgress();
-        this.props.emitProgress(currentProgress);
+        if(this.props.isStart){
+            this.props.emitProgress(currentProgress);
+        }
         return(
             <div>
                 <Container>
@@ -96,9 +99,9 @@ export default class Typer extends Component{
                         <b>{middStr}</b> 
                         {' '+rightStrArr.join(' ')}
                     </Segment>
-                    {this.state.isStart &&
+                    {this.props.isStart &&
                         <Input type="text" onKeyPress={this.handleKeyPress} />
-                    }{!this.state.isStart &&
+                    }{!this.props.isStart &&
                         <Input type="text" disabled onKeyPress={this.handleKeyPress}/>
                     }
                 </Container>
