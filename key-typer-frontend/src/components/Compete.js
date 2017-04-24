@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import Typer from './Typer'
 import {Segment} from 'semantic-ui-react'
 import io from 'socket.io-client';
-
+import RecordTable from './RecordTable'
 
 export default class Compete extends Component{
     constructor(props){
@@ -49,6 +49,7 @@ export default class Compete extends Component{
         return(
                 <Segment padded textAlign='center'>
                     <Typer isStart={this.state.isStart} stopGame={this.emitStopGame} startGame={this.emitStartGame} emitProgress={this.emitProgress}/>
+                    {this.socket && <RecordTable thisSocket={this.socket.id} clientList={this.state.clientList}/>}
                 </Segment>
         )
     }
@@ -61,7 +62,7 @@ export default class Compete extends Component{
         }
 
         this.socket.on('receive clientlist', clientList => {
-            console.log(clientList);
+            console.log('receive',clientList);
             this.setState({
                 clientList: clientList
             })

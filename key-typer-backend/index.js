@@ -17,32 +17,6 @@ app.get('/', function(req,res){
 //contain client in the room
 var rooms = [];
 
-// var clients = [];
-
-// rooms = [client]
-
-//send to the room clients and it's percent.
-
-
-//io is the connection of the serversocket
-
-// function findClientInRoom(room) {
-//     let listOfClient = [];
-//     clients.forEach(function(client) {
-//         if(client.room == String(this)){
-//             listOfClient.push(client)
-//         }
-//     }, room);
-//     return listOfClient;
-// }
-
-// function findCurrentSocket(socketId){
-//     let indexCurrentSocket = clients.findIndex(function (client){
-//         return client.id==String(this)
-//     },socketId);
-//     return indexCurrentSocket;
-// }
-
 io.on('connection', function(socket){
 
     socket.on('disconnect', function(){

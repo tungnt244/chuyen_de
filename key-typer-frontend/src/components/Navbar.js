@@ -9,9 +9,9 @@ export default class Navbar extends Component{
         this.practiseClick = this.practiseClick.bind(this);
         this.changeUserName = this.changeUserName.bind(this);
         this.competeClick = this.competeClick.bind(this);
-        this.state={
-            tempUserName: 'Guest'
-        }
+        // this.state={
+        //     tempUserName: 'Guest'
+        // }
     }
 
     practiseClick(event){
@@ -19,22 +19,23 @@ export default class Navbar extends Component{
     }
     //call the callback function to update
     changeUserName(event, data){
-        this.setState({
-            tempUserName: data.value
-        })
+        // this.setState({
+        //     tempUserName: data.value
+        // })
         this.props.createUser(data.value)
     }
 
     competeClick(event){
         let param = randomize('Aa0',8);
-        browserHistory.push('/compete/'+param);
+        // browserHistory.push('/compete/'+param);
+        location.assign('http://localhost:3000/compete/'+param)
     }
 
-    componentWillReceiveProps(nextProps){
-        this.setState({
-            tempUserName: nextProps.username
-        })
-    }
+    // componentWillReceiveProps(nextProps){
+    //     this.setState({
+    //         tempUserName: nextProps.username
+    //     })
+    // }
 
     render() {
         return(
@@ -52,7 +53,7 @@ export default class Navbar extends Component{
                                     <Form.Group widths='equal' inline>
                                         <Form.Field inline>
                                             <label> User name: </label>
-                                            <Input type='text' value={this.state.tempUserName} onChange={this.changeUserName}/>
+                                            <Input type='text' value={this.props.username} onChange={this.changeUserName}/>
                                         </Form.Field>
                                     </Form.Group>
                                 </Form>

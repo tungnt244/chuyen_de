@@ -18,10 +18,28 @@ export default class Typer extends Component{
         }
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.startType = this.startType.bind(this);
+        this.stopType =this.stopType.bind(this);
+        this.resetGame = this.resetGame.bind(this);
     }
     
+    resetGame(){
+        var str = paraData;
+        let rightstr = str.trim().split(/\s\s*/);
+        let middstr = rightstr.shift();//a string
+        this.setState({
+            leftstring: [],// an empty array
+            middstring: middstr,//an element 
+            rightstring:rightstr,//full array without midd
+            timeRemaining: timer, //timer left
+        })
+    }
+
     startType(){
         this.props.startGame()
+    }
+
+    stopType(){
+        this.props.stopGame()
     }
 
     currentProgress(){
@@ -61,6 +79,8 @@ export default class Typer extends Component{
     tick(){
         if(this.state.timeRemaining === 0){
             clearInterval(this.timerId)
+            delete this.timerId
+            this.resetGame()
             if(this.props.isStart){
                 this.props.stopGame()
             }
@@ -78,6 +98,11 @@ export default class Typer extends Component{
         if(nextProps.isStart === true && !this.timerId){
             this.timerId = setInterval(() => this.tick(), 1000);
         }
+        if(nextProps.isStart === false && this.timerId){
+            clearInterval(this.timerId)
+            delete this.timerId
+            this.resetGame()
+        }
     }
 
     render(){
@@ -91,7 +116,8 @@ export default class Typer extends Component{
         return(
             <div>
                 <Container>
-                    <Button color='green' onClick={this.startType}>Start</Button>
+                    {!this.props.isStart &&<Button color='green' onClick={this.startType}>Start</Button>}
+                    {this.props.isStart &&<Button color='red' onClick={this.stopType}>Stop</Button>}
                     <h3>Time : {this.state.timeRemaining}</h3>
                     <Progress percent={currentProgress} autoSuccess />
                     <Segment padded>
