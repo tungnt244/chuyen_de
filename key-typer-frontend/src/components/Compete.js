@@ -10,17 +10,19 @@ export default class Compete extends Component{
         this.state={
             roomId: this.props.params.room,
             clientList: {},
-            isStart: false
+            isStart: false,
+            isWinner: false
         }
         this.emitProgress = this.emitProgress.bind(this);
         this.emitStartGame = this.emitStartGame.bind(this);
         this.emitStopGame = this.emitStopGame.bind(this);
+        this.emitWinner = this.emitWinner.bind(this);
     }
 
     //update the progress in server
     emitProgress(currentProgress){
         if(this.socket){
-            this.socket.emit('update socket progress',currentProgress, this.state.roomId)
+            this.socket.emit('update socket progress',currentProgress, this.state.roomId, this.props.username)
         }
     }
 
@@ -36,6 +38,13 @@ export default class Compete extends Component{
             this.socket.emit('start game room', this.state.roomId)
     }
 
+    emitWinner(){
+        console.log('in emit winner')
+        if(this.socket){
+            this.socket.emit('who the winner', this.state.roomId)
+        }
+    }
+
     componentWillReceiveProps(nextProps){
         if(this.state.roomId){
             this.socket.emit('leave room', this.state.roomId);
@@ -48,7 +57,7 @@ export default class Compete extends Component{
     render(){
         return(
                 <Segment padded textAlign='center'>
-                    <Typer isStart={this.state.isStart} stopGame={this.emitStopGame} startGame={this.emitStartGame} emitProgress={this.emitProgress}/>
+                    <Typer setWinner={this.emitWinner} isWinner={this.state.isWinner} isStart={this.state.isStart} stopGame={this.emitStopGame} startGame={this.emitStartGame} emitProgress={this.emitProgress}/>
                     {this.socket && <RecordTable thisSocket={this.socket.id} clientList={this.state.clientList}/>}
                 </Segment>
         )
@@ -58,28 +67,35 @@ export default class Compete extends Component{
         console.log(this.state)
         if(this.props.params){
             this.socket = io('http://localhost:8000/');
-            this.socket.emit('join room', this.state.roomId);
+            this.socket.emit('join room', this.state.roomId, this.props.username);
         }
 
         this.socket.on('receive clientlist', clientList => {
-            console.log('receive',clientList);
             this.setState({
                 clientList: clientList
             })
         })
 
         this.socket.on('start game', () => {
-            console.log('on listen to start')
             this.setState({
-                isStart: true
+                isStart: true,
+                isWinner: false
             })
         })
 
         this.socket.on('stop game', () => {
-            console.log('on stop listen')
             this.setState({
                 isStart: false
             })
+        })
+
+        this.socket.on('set winner', socketId => {
+            if(this.socket.id == socketId){
+                this.setState({
+                    isWinner: true
+                })
+            }
+            this.emitStopGame()
         })
     }
 }

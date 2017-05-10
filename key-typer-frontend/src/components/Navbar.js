@@ -15,7 +15,7 @@ export default class Navbar extends Component{
     }
 
     practiseClick(event){
-        console.log('practiseClick')
+        location.assign('http://localhost:3000/practise')
     }
     //call the callback function to update
     changeUserName(event, data){

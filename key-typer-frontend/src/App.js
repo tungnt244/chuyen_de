@@ -14,9 +14,10 @@ class App extends Component {
   }
   //callback function
   //update the username from the navbar
-  createUser(username){
+  createUser(userName){
+    console.log('username', userName)
     this.setState({
-      username: username
+      username: userName
     })
   }
 
