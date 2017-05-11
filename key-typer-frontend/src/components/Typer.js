@@ -134,9 +134,9 @@ export default class Typer extends Component{
                     {!this.props.isStart &&<Button color='green' onClick={this.props.startGame}>Start</Button>}
                     <h3>Time : {this.state.timeRemaining}</h3>
                     <Progress percent={currentProgress} autoSuccess />
-                    <Segment padded>
+                    <Segment padded style={{'font-size':'20px'}}>
                         { leftStrArr.join(' ')+ ' '} 
-                        <b>{middStr}</b> 
+                        <text style={{ 'background-color': '#78FECF'}}><b>{middStr}</b></text> 
                         {' '+rightStrArr.join(' ')}
                     </Segment>
                     {this.props.isStart &&
