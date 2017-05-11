@@ -36,7 +36,7 @@ export default class ReservationCard extends React.Component {
     timer:100
 }]
 export var data =[{
-    para: `hello there, what should i do now don't know
+    para: `This is hard to understand
                     `,
     timer: 15
 },{
