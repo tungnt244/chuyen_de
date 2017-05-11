@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Container, Segment, Input, Button} from 'semantic-ui-react';
+import {Container, Segment, Input, Button, Modal} from 'semantic-ui-react';
 import {paraData, timer} from '../paragraph-data/data.js';
 import {Progress} from 'semantic-ui-react';
 
@@ -15,14 +15,33 @@ export default class Typer extends Component{
             middstring: middstr,//an element 
             rightstring:rightstr,//full array without midd
             timeRemaining: timer, //timer left
+            openModal: false,
         }
         this.handleKeyPress = this.handleKeyPress.bind(this);
-        this.startType = this.startType.bind(this);
-        this.stopType =this.stopType.bind(this);
-        this.resetGame = this.resetGame.bind(this);
+        this.resetGame = this.resetGameState.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.playAgain = this.playAgain.bind(this);
     }
     
-    resetGame(){
+    closeModal(){
+        this.setState({
+            openModal : false
+        })
+    }
+
+    openModal(){
+        this.setState({
+            openModal: true
+        })
+    }
+
+    playAgain(){
+        this.closeModal();
+        this.resetGameState();
+        this.props.startGame();
+    }
+
+    resetGameState(){
         var str = paraData;
         let rightstr = str.trim().split(/\s\s*/);
         let middstr = rightstr.shift();//a string
@@ -32,14 +51,6 @@ export default class Typer extends Component{
             rightstring:rightstr,//full array without midd
             timeRemaining: timer, //timer left
         })
-    }
-
-    startType(){
-        this.props.startGame()
-    }
-
-    stopType(){
-        this.props.stopGame()
     }
 
     currentProgress(){
@@ -70,7 +81,9 @@ export default class Typer extends Component{
                 })
                 if(!midd){
                     console.log('in midd')
-                    this.props.stopGame()
+                    this.props.setWinner()
+                    // this.props.stopGame()
+                    // console.log('whats up')
                 }
             }
         }
@@ -78,12 +91,7 @@ export default class Typer extends Component{
 
     tick(){
         if(this.state.timeRemaining === 0){
-            clearInterval(this.timerId)
-            delete this.timerId
-            this.resetGame()
-            if(this.props.isStart){
-                this.props.stopGame()
-            }
+            this.props.stopGame();
             return;
         }
 
@@ -96,12 +104,13 @@ export default class Typer extends Component{
 
     componentWillReceiveProps(nextProps){
         if(nextProps.isStart === true && !this.timerId){
+            this.playAgain()
             this.timerId = setInterval(() => this.tick(), 1000);
         }
         if(nextProps.isStart === false && this.timerId){
             clearInterval(this.timerId)
             delete this.timerId
-            this.resetGame()
+            this.openModal()
         }
     }
 
@@ -110,14 +119,19 @@ export default class Typer extends Component{
         let middStr = this.state.middstring;
         let leftStrArr = this.state.leftstring;
         let currentProgress = this.currentProgress();
+        let yourResult = '';
+        if(this.props.isWinner){
+            yourResult = 'win'
+        }else{
+            yourResult = 'lose' 
+        }
         if(this.props.isStart){
             this.props.emitProgress(currentProgress);
         }
         return(
             <div>
                 <Container>
-                    {!this.props.isStart &&<Button color='green' onClick={this.startType}>Start</Button>}
-                    {this.props.isStart &&<Button color='red' onClick={this.stopType}>Stop</Button>}
+                    {!this.props.isStart &&<Button color='green' onClick={this.props.startGame}>Start</Button>}
                     <h3>Time : {this.state.timeRemaining}</h3>
                     <Progress percent={currentProgress} autoSuccess />
                     <Segment padded>
@@ -131,6 +145,20 @@ export default class Typer extends Component{
                         <Input type="text" disabled onKeyPress={this.handleKeyPress}/>
                     }
                 </Container>
+                <Modal open={this.state.openModal} basic size='small'>
+                    <Modal.Header icon='archive' content={'You ' + yourResult}></Modal.Header>
+                    <Modal.Content>
+                         Do you want to play again!!
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button color='red' onClick={this.closeModal}>
+                            No
+                        </Button>
+                        <Button color='green' onClick={this.playAgain}>
+                            Yes
+                        </Button>
+                    </Modal.Actions>
+                </Modal>
             </div>
         );
     }
