@@ -10,6 +10,7 @@ ReactDOM.render((
     <Route path='/' component={App}>
       <Route path='compete/:room' component={Compete}/>
       <IndexRoute path='practise' component={PractiseTyper}/>
+      <Route path='practise' component={PractiseTyper}/>
     </Route>
   </Router>  
 ),document.getElementById('root'));

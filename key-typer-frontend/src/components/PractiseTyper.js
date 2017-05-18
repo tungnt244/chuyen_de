@@ -24,8 +24,7 @@ export default class PractiseTyper extends Component{
     }
     startGame(){
         if(typeof this.didPlay == 'undefined'){
-            console.log('okey 1')
-            this.didPlay = true
+            this.didPlay = true    
         }
         else if(this.didPlay){
             this.resetGameState()
@@ -117,7 +116,9 @@ export default class PractiseTyper extends Component{
         let middStr = this.state.middstring;
         let leftStrArr = this.state.leftstring;
         let currentProgress = this.currentProgress();
-        
+        if(this.refs.input_focus){
+            this.refs.input_focus.focus()
+        }
         return(
             <Segment padded textAlign='center'>
                 <Container>
@@ -133,7 +134,7 @@ export default class PractiseTyper extends Component{
                         {' '+rightStrArr.join(' ')}
                     </Segment>
                     {this.state.isStart && 
-                        <Input type="text" onKeyPress={this.handleKeyPress} />
+                        <Input ref='input_focus' type="text"  onKeyPress={this.handleKeyPress} />
                     }
                     {!this.state.isStart &&
                         <Input type="text" disabled onKeyPress={this.handleKeyPress}/>

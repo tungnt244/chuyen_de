@@ -80,6 +80,10 @@ export default class Typer extends Component{
                     rightstring:rightstr,//full array without midd
                 })
                 if(!midd){
+                    if(this.props.isStart){
+                        let currentProgress = this.currentProgress();
+                        this.props.emitProgress(currentProgress);
+                    }
                     console.log('in midd')
                     this.props.setWinner()
                     // this.props.stopGame()
@@ -94,7 +98,10 @@ export default class Typer extends Component{
             this.props.stopGame();
             return;
         }
-
+        if(this.props.isStart){
+            let currentProgress = this.currentProgress();
+            this.props.emitProgress(currentProgress);
+        }
         let temp = this.state.timeRemaining-1;
 
         this.setState({
@@ -118,16 +125,16 @@ export default class Typer extends Component{
         let rightStrArr = this.state.rightstring;
         let middStr = this.state.middstring;
         let leftStrArr = this.state.leftstring;
-        let currentProgress = this.currentProgress();
         let yourResult = '';
+        if(this.refs.input_focus){
+            this.refs.iput_focus.focus()
+        }
         if(this.props.isWinner){
             yourResult = 'win'
         }else{
             yourResult = 'lose' 
         }
-        if(this.props.isStart){
-            this.props.emitProgress(currentProgress);
-        }
+        let currentProgress = this.currentProgress();
         return(
             <div>
                 <Container>
@@ -140,7 +147,7 @@ export default class Typer extends Component{
                         {' '+rightStrArr.join(' ')}
                     </Segment>
                     {this.props.isStart &&
-                        <Input type="text" onKeyPress={this.handleKeyPress} />
+                        <Input refs='input_focus' type="text" onKeyPress={this.handleKeyPress} />
                     }{!this.props.isStart &&
                         <Input type="text" disabled onKeyPress={this.handleKeyPress}/>
                     }
